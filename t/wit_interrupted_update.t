@@ -11,14 +11,16 @@ wit add-pkg https://github.com/sifive/block-pio-sifive
 set -x
 
 # brew install coreutils
-git config --global url."https://github.com/".insteadOf 'git@github.com:'
+if [ "$CI" = "TRUE" ]; do
+    git config --global url."https://github.com/".insteadOf 'git@github.com:'
+fi
+
 timeout 3 wit update
 
 ls block-pio-sifive
 
 check "packages should not be checked out when update is interrupted" [ $? -ne 0 ]
 
-git config --global url."https://github.com/".insteadOf 'git@github.com:'
 wit update
 
 ls block-pio-sifive
