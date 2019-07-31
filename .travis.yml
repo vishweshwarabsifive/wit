@@ -17,6 +17,9 @@ jobs:
     - stage: test
       name: "Type Checking"
       script: mypy lib/wit/*.py
+    # - stage: test
+    #   name: "Regression Tests"
+    #   script: ./t/regress.sh
     - stage: test
-      name: "Regression Tests"
-      script: ./t/regress.sh
+      name: "Debug"
+      script: ./t/wit_interrupted_update.t
