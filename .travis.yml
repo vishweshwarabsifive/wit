@@ -16,4 +16,4 @@ jobs:
       script: mypy lib/wit/*.py
     - stage: test
       name: "Regression Tests"
-      script: ./t/wit_interrupted_resolve.t
+      script: ./t/wit_interrupted_update.t
