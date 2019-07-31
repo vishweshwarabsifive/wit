@@ -11,17 +11,16 @@ wit add-pkg https://github.com/sifive/block-pio-sifive
 set -x
 
 # brew install coreutils
-if [ "$CI" = "true" ]; then
-    git config --global url."https://github.com/".insteadOf 'git@github.com:'
-fi
+cp ~/.gitconfig .
+HOME=$PWD git config --global url."https://github.com/".insteadOf 'git@github.com:'
 
-timeout 3 wit update
+HOME=$PWD timeout 3 wit update
 
 ls block-pio-sifive
 
 check "packages should not be checked out when update is interrupted" [ $? -ne 0 ]
 
-wit update
+HOME=$PWD wit update
 
 ls block-pio-sifive
 
