@@ -61,6 +61,9 @@ def main() -> None:
                              help='don\'t run fetch-scala upon creating the workspace')
     init_parser.add_argument('-a', '--add-pkg', metavar='repo[::revision]', action='append',
                              type=parse_dependency_tag, help='add an initial package')
+    init_parser.add_argument('--reference', dest='reference',
+                             help=('Use another workspace for \'git clone --reference-if-able\'. '
+                             'This writes the path to .wit-gitreference for subsequent operations'))
     init_parser.add_argument('workspace_name')
 
     add_pkg_parser = subparsers.add_parser('add-pkg', help='add a package to the workspace')
@@ -184,6 +187,8 @@ def create(args) -> None:
         dependencies = args.add_pkg
 
     ws = WorkSpace.create(args.workspace_name, parse_repo_path(args))
+    if args.reference is not None:
+        create_ref_file(ws.root, args.reference)
     for dep in dependencies:
         ws.add_dependency(dep)
 
@@ -192,6 +197,11 @@ def create(args) -> None:
 
         if args.fetch_scala:
             fetch_scala(ws, args, agg=True)
+
+
+def create_ref_file(root, reference):
+    with open(root.joinpath('.wit-gitreference'), 'w') as f:
+        f.write(reference)
 
 
 def add_pkg(ws, args) -> None:

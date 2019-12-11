@@ -50,6 +50,7 @@ class GitRepo:
     def __init__(self, name, wsroot: Path):
         self.name = name
         self.path = wsroot / name
+        self.wsroot = wsroot
         # Cache known hashes for quick lookup
         self._known_hashes = set()  # type: Set[str]
 
@@ -79,8 +80,13 @@ class GitRepo:
             "Trying to clone and checkout into existing git repo!"
         log.info('Cloning {}...'.format(self.name))
 
-        proc = self._git_command("clone", "--no-checkout", source, str(self.path),
-                                 working_dir=str(self.path.parent))
+        cmd = ["clone"]
+        refpath = self.reference_location()
+        if refpath:
+            cmd.extend(["--reference-if-able", str(refpath.joinpath(self.name))])
+        cmd.extend(["--no-checkout", source, str(self.path)])
+
+        proc = self._git_command(*cmd, working_dir=str(self.path.parent))
         try:
             self._git_check(proc)
         except GitError:
@@ -88,6 +94,15 @@ class GitRepo:
                 raise BadSource(name, source)
             else:
                 raise
+
+
+    def reference_location(self):
+        try:
+            with open(self.wsroot.parent.joinpath(".wit-gitreference"), 'r') as f:
+                return Path(f.read())
+        except:
+            return None
+
 
     # name is needed for generating error messages
     def fetch(self, source, name):
