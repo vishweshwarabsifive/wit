@@ -34,6 +34,15 @@ make_repo() {
     git -C $repo_name commit -m "commit1"
 }
 
+make_bare_repo() {
+    repo_name=$1
+
+    make_repo $repo_name
+    mv ${repo_name}/.git ${repo_name}.git
+    rm -rf ${repo_name}
+    git -C ${repo_name}.git config --bool core.bare true
+}
+
 check() {
     check_name=$1
     shift;

@@ -50,6 +50,14 @@ init_parser.add_argument('-a', '--add-pkg', metavar='repo[::revision]', action='
                          type=parse_dependency_tag, help='add an initial package')
 init_parser.add_argument('workspace_name')
 
+# ********** restore subparser **********
+restore_parser = subparsers.add_parser('restore', help='restore previous workspace')
+restore_parser.add_argument('workspace_name')
+restore_parser.add_argument('-l', '--lock-file', dest='lock_file',
+                            help="The previous workspace's wit-lock.json file")
+restore_parser.add_argument('-w', '--workspace-file', dest='workspace_file',
+                            help="The previous workspace's wit-workspace.json file")
+
 # ********** add-pkg subparser **********
 add_pkg_parser = subparsers.add_parser('add-pkg', help='add a package to the workspace')
 add_pkg_parser.add_argument('repo', metavar='repo[::revision]', type=parse_dependency_tag)

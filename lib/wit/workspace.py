@@ -2,6 +2,8 @@
 
 import sys
 import shutil
+import threading
+import queue
 from pathlib import Path
 from pprint import pformat
 from .manifest import Manifest
@@ -105,6 +107,47 @@ class WorkSpace:
         lockfile.write(cls._lockfile_path(root))
 
         return WorkSpace(root, repo_paths)
+
+    @classmethod
+    def restore(cls, name, lock_file, workspace_file):
+        root = Path.cwd() / name
+        if root.exists():
+            log.error("Workspace directory [{}] already exists.".format(str(root)))
+            sys.exit(1)
+        log.info("Creating new workspace [{}]".format(str(root)))
+        root.mkdir()
+
+        dotwit = root/'.wit'
+        dotwit.mkdir()
+
+        shutil.copy(lock_file, str(root))
+        shutil.copy(workspace_file, str(root))
+        ws = WorkSpace(root, [])
+
+        def do_clone(pkg, root, errors):
+            try:
+                pkg.load(root, True)
+                pkg.checkout(root)
+            except Exception as e:
+                errors.put(e)
+
+        errors = queue.Queue()
+        threads = list()
+        for pkg in ws.lock.packages:
+            t = threading.Thread(target=do_clone, args=(pkg, root, errors))
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join()
+
+        if not errors.empty():
+            while not errors.empty():
+                e = errors.get()
+                log.error("Unable to create workspace [{}]: {}".format(str(root), e))
+            sys.exit(1)
+
+        return ws
 
     def _load_manifest(self):
         return Manifest.read_manifest(self.manifest_path())

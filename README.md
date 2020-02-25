@@ -77,6 +77,15 @@ You can always checkout remote branches by specifying the remote as well
 
     wit update-pkg <package>::<remote>/<branch>
 
+### Restore a previous workspace
+
+If you have a matching pair `wit-lock.json` and `wit-workspace.json` from another workspace, you can create
+a new clean workspace by providing those files to the `restore` sub-command.
+
+    wit restore <new-workspace-name> -l </path/to/wit-lock.json> -w </path/to/wit-workspace.json>
+
+Dependencies are only specified by the `wit-lock.json` file, no other dependency resolution is performed.
+
 ## Autocompletion
 
 Tab completion can be enabled via `source complete.bash`. If you want it to persist, see below.

@@ -63,6 +63,8 @@ def main() -> None:
         # FIXME: This big switch statement... no good.
         if args.command == 'init':
             create(args)
+        elif args.command == 'restore':
+            restore_from_lock(args)
 
         else:
             # These commands assume the workspace already exists. Error out if the
@@ -127,6 +129,10 @@ def create(args) -> None:
 
         if args.fetch_scala:
             fetch_scala(ws, args, agg=True)
+
+
+def restore_from_lock(args) -> None:
+    WorkSpace.restore(args.workspace_name, args.lock_file, args.workspace_file)
 
 
 def add_pkg(ws, args) -> None:
