@@ -82,9 +82,18 @@ You can always checkout remote branches by specifying the remote as well
 If you have a matching pair `wit-lock.json` and `wit-workspace.json` from another workspace, you can create
 a new clean workspace by providing those files to the `restore` sub-command.
 
-    wit restore <new-workspace-name> -l </path/to/wit-lock.json> -w </path/to/wit-workspace.json>
+    $ wit restore <new-workspace-name> -l </path/to/wit-lock.json> -w </path/to/wit-workspace.json>
 
 Dependencies are only specified by the `wit-lock.json` file, no other dependency resolution is performed.
+If you are keeping your wit-lock.json and wit-workspace.json under revision control you can do an in-place
+restore
+
+    $ git clone http://example.com/my_workspaces
+    $ cd my_workspaces/project1
+    $ ls
+    wit-lock.json wit-workspace.json
+    $ wit restore
+
 
 ## Autocompletion
 

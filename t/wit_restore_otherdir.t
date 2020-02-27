@@ -32,13 +32,7 @@ prereq off
 
 cd $BASE_DIR
 
-mkdir second-ws
-cp  myws/wit-lock.json myws/wit-workspace.json second-ws/
-cd second-ws
-
-wit restore
-
-cd $BASE_DIR
+wit restore -n second-ws -l myws/wit-lock.json -w myws/wit-workspace.json
 
 diff myws/wit-workspace.json second-ws/wit-workspace.json
 check "wit-workspace.json files should be the same" [ $? -eq 0 ]

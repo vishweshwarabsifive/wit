@@ -109,19 +109,8 @@ class WorkSpace:
         return WorkSpace(root, repo_paths)
 
     @classmethod
-    def restore(cls, name, lock_file, workspace_file):
-        root = Path.cwd() / name
-        if root.exists():
-            log.error("Workspace directory [{}] already exists.".format(str(root)))
-            sys.exit(1)
-        log.info("Creating new workspace [{}]".format(str(root)))
-        root.mkdir()
-
-        dotwit = root/'.wit'
-        dotwit.mkdir()
-
-        shutil.copy(lock_file, str(root))
-        shutil.copy(workspace_file, str(root))
+    def restore(cls, root):
+        # constructing WorkSpace will parse the lock file
         ws = WorkSpace(root, [])
 
         def do_clone(pkg, root, errors):

@@ -12,6 +12,7 @@
 
 import subprocess
 import sys
+import shutil
 import os
 from .witlogger import getLogger
 from .workspace import WorkSpace, PackageNotInWorkspaceError
@@ -131,8 +132,44 @@ def create(args) -> None:
             fetch_scala(ws, args, agg=True)
 
 
+# A user can restore a workspace in the current directory, or in a new directory.
+# A wit-lock.json and wit-workspace.json needs to be found either in the current directory
+# or separately specified by arguments.
 def restore_from_lock(args) -> None:
-    WorkSpace.restore(args.workspace_name, args.lock_file, args.workspace_file)
+    root = Path.cwd()
+    if args.workspace_name:
+        root = Path.cwd() / args.workspace_name
+        if root.exists() and not args.force:
+            log.error("New workspace directory [{}] already exists.".format(str(root)))
+            sys.exit(1)
+        else:
+            log.info("Creating new workspace [{}]".format(str(root)))
+            root.mkdir()
+
+    dotwit = root/'.wit'
+    if not dotwit.exists():
+        dotwit.mkdir()
+    elif not args.force:
+        log.error("Directory [{}] is a workspace, contains a .wit directory. Use -f to force."
+                  .format(str(root)))
+        sys.exit(1)
+
+    lock = 'wit-lock.json'
+    if args.lock_file:
+        shutil.copy(args.lock_file, str(root/lock))
+
+    ws = 'wit-workspace.json'
+    if args.workspace_file:
+        shutil.copy(args.workspace_file, str(root/ws))
+
+    if not (root / lock).exists():
+        log.error("Could not find {}".format(str(root / lock)))
+        sys.exit(1)
+
+    if not (root / ws).exists():
+        log.error("Could not find {}".format(str(root / ws)))
+
+    WorkSpace.restore(root)
 
 
 def add_pkg(ws, args) -> None:

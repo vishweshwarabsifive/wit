@@ -51,12 +51,21 @@ init_parser.add_argument('-a', '--add-pkg', metavar='repo[::revision]', action='
 init_parser.add_argument('workspace_name')
 
 # ********** restore subparser **********
-restore_parser = subparsers.add_parser('restore', help='restore previous workspace')
-restore_parser.add_argument('workspace_name')
+restore_parser = subparsers.add_parser(
+    'restore',
+    help='restore previous workspace',
+    description='Create a workspace in the current directory from the metadata of a previous '
+                'workspace. The wit-workspace.json and wit-lock.json files are required to be '
+                'provided but are assumed to be in the current directory.')
+restore_parser.add_argument(
+    '-n', '--name', dest='workspace_name',
+    help='new directory to create workspace in. Default is $PWD.')
 restore_parser.add_argument('-l', '--lock-file', dest='lock_file',
-                            help="The previous workspace's wit-lock.json file")
+                            help="alternative source location for wit-lock.json")
 restore_parser.add_argument('-w', '--workspace-file', dest='workspace_file',
-                            help="The previous workspace's wit-workspace.json file")
+                            help="alternative source location for wit-workspace.json")
+restore_parser.add_argument('-f', '--force', dest='force', action='store_true',
+                            help='Ignore pre-existing workspace contents')
 
 # ********** add-pkg subparser **********
 add_pkg_parser = subparsers.add_parser('add-pkg', help='add a package to the workspace')
