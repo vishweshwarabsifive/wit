@@ -37,7 +37,9 @@ class NotAPackageError(WitUserError):
 def main() -> None:
 
     args = parser.parse_args()
-    if args.verbose >= 4:
+    if args.quiet:
+        log.disabled = True
+    elif args.verbose >= 4:
         log.setLevel('SPAM')
     elif args.verbose == 3:
         log.setLevel('TRACE')

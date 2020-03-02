@@ -19,12 +19,15 @@ parser = argparse.ArgumentParser(
     prog='wit',
     formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('-v', '--verbose', action='count', default=0,
-                    help='''Specify level of verbosity
+                    help='''Specify level of verbosity.
+Default level is 'info'.
 -v:    verbose
 -vv:   debug
 -vvv:  trace
 -vvvv: spam
 ''')
+parser.add_argument('-q', '--quiet', action='store_true',
+                    help='Disable logging output. Overrides verbose.')
 parser.add_argument('--version', action='store_true', help='Print wit version')
 parser.add_argument('-C', dest='cwd', type=chdir, metavar='path', help='Run in given path')
 parser.add_argument('--repo-path', default=os.environ.get('WIT_REPO_PATH'),
